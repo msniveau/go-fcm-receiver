@@ -19,7 +19,7 @@ type FCMClient struct {
 	ApiKey                string
 	AppId                 string
 	ProjectID             string
-	HttpClient            http.Client
+	HttpClient            http.Client `json:"-"`
 	GcmToken              string
 	FcmToken              string
 	AndroidId             uint64
@@ -31,8 +31,8 @@ type FCMClient struct {
 	persistentMutex       sync.Mutex
 	HeartbeatInterval     time.Duration
 	socket                FCMSocketHandler
-	OnDataMessage         func(message []byte)
-	OnRawMessage          func(message *DataMessageStanza)
+	OnDataMessage         func(message []byte)             `json:"-"`
+	OnRawMessage          func(message *DataMessageStanza) `json:"-"`
 	AndroidApp            *AndroidFCM
 	InstallationAuthToken *string
 }

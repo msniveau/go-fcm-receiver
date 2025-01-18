@@ -13,48 +13,47 @@ func StringsSliceContains(s []string, e string) bool {
 	return false
 }
 
-func ReadUint32(buf []byte) (int, int, error) {
-	value := 4294967295
-	// optimizer type-hint, tends to deopt otherwise (?!)
+func ReadUint32(buf []byte) (uint32, int, error) {
+	value := uint32(4294967295) // Use uint32 instead of int
 	pos := 0
 
-	value = (int(buf[pos]) & 127) >> uint(0)
+	value = (uint32(buf[pos]) & 127) >> 0
 	if buf[pos] < 128 {
 		return value, pos, nil
 	}
 	if len(buf) < 2 {
-		return pos, value, errors.New("not enough bytes for ReadUint32")
+		return uint32(pos), int(value), errors.New("not enough bytes for ReadUint32")
 	}
 
 	pos++
-	value = (value | (int(buf[pos])&127)<<7) >> uint(0)
+	value = (value | (uint32(buf[pos])&127)<<7) >> 0
 	if buf[pos] < 128 {
 		return value, pos, nil
 	}
 	if len(buf) < 3 {
-		return pos, value, errors.New("not enough bytes for ReadUint32")
+		return uint32(pos), int(value), errors.New("not enough bytes for ReadUint32")
 	}
 
 	pos++
-	value = (value | (int(buf[pos])&127)<<14) >> uint(0)
-	if buf[pos] < 128 {
-		return value, pos, nil
-	}
-	if len(buf) < 3 {
-		return pos, value, errors.New("not enough bytes for ReadUint32")
-	}
-
-	pos++
-	value = (value | (int(buf[pos])&127)<<21) >> uint(0)
+	value = (value | (uint32(buf[pos])&127)<<14) >> 0
 	if buf[pos] < 128 {
 		return value, pos, nil
 	}
 	if len(buf) < 4 {
-		return pos, value, errors.New("not enough bytes for ReadUint32")
+		return uint32(pos), int(value), errors.New("not enough bytes for ReadUint32")
 	}
 
 	pos++
-	value = (value | (int(buf[pos])&15)<<28) >> uint(0)
+	value = (value | (uint32(buf[pos])&127)<<21) >> 0
+	if buf[pos] < 128 {
+		return value, pos, nil
+	}
+	if len(buf) < 5 {
+		return uint32(pos), int(value), errors.New("not enough bytes for ReadUint32")
+	}
+
+	pos++
+	value = (value | (uint32(buf[pos])&15)<<28) >> 0
 	if buf[pos] < 128 {
 		return value, pos, nil
 	}
@@ -64,5 +63,5 @@ func ReadUint32(buf []byte) (int, int, error) {
 
 func ReadInt32(buf []byte) (int, int, error) {
 	value, pos, err := ReadUint32(buf)
-	return value | 0, pos, err
+	return int(value | 0), pos, err
 }
